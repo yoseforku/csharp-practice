@@ -1,51 +1,81 @@
-﻿
-using System.Diagnostics;
-/* 
-string ?region=null;
+﻿using System.Diagnostics;
+/* // Module 1 Lab
 
+//Exercise 1: The First Safety Net (LO 1.1: Environment + Null Safety)
+
+//string region=null;
+
+//Console.WriteLine(region?.ToUpper() ?? "Region is null."); 
+
+// This tells the compiler: "I know this might be null. I accept responsibility."
+string? region = null;
+
+// If region is null, ToUpper() never executes. No crash.
 string? upperRegion = region?.ToUpper();
 Console.WriteLine($"Region (conditional): {upperRegion}");
 
+
+// If region is null, use "Unassigned" instead.
 string displayRegion = region ?? "Unassigned";
 Console.WriteLine($"Region (coalesced): {displayRegion}");
 
-region ??= "Addis Ababa";
-Console.WriteLine($"Region (assigned): {region}"); */
+// Useful for lazy initialization.
+region??="addis ababa";
+Console.WriteLine($"Region (assigned): {region}");
+ */
 
 /* string studentName = "Abeba";
 string studentId = "STU-001";
 int enrollmentCount = 3;
-decimal grantAmount = 1999.99m; 
+decimal grantAmount = 1999.99m; // 'm' suffix marks a decimal literal
 DateTime enrolledAt = DateTime.UtcNow;
 string? campusRegion = null;
+
 Console.WriteLine($"Student: {studentName} ({studentId})");
 Console.WriteLine($"Courses: {enrollmentCount}");
 Console.WriteLine($"Grant: {grantAmount:F2}");
 Console.WriteLine($"Enrolled: {enrolledAt:yyyy-MM-dd}");
-Console.WriteLine($"Campus: {campusRegion ?? "Not assigned"}"); */
+Console.WriteLine($"Campus: {campusRegion ?? "Not assigned"}");
+ */
+//Exercise 2: The Ministry Audit Failure (LO 1.2: Primitives)
 
+// Legacy implementation — the bug that caused the audit failure
+
+/* double grantPerStudent = 1999.99;
+double totalAllocation = grantPerStudent * 100_000;
+Console.WriteLine($"Total allocated (double): {totalAllocation}");
+ */
+
+ // Fixed implementation — exact financial math
 /* decimal grantPerStudent = 1999.99m;
 decimal totalAllocation = grantPerStudent * 100_000m;
 Console.WriteLine($"Total allocated (decimal): {totalAllocation}");
 Console.WriteLine($"Total allocated (formatted): {totalAllocation:F2}"); */
+
+// Exercise 3: Pipeline Data Corruption (LO 1.3 & 1.4: Encapsulation)
 /* 
 var enrollment = new EnrollmentRecord("STU-001", "CS-401", DateTime.UtcNow);
 Console.WriteLine(enrollment);
 
-// enrollment.CourseCode = "HACKED"; 
+ //enrollment.CourseCode = "HACKED"; // ERROR: init-only property
 
+// Non-destructive copy — creates a NEW record with one field changed
 var corrected = enrollment with { CourseCode = "CS-402" };
 Console.WriteLine(corrected);
 
+// Value equality — two records with the same data are equal
 var duplicate = new EnrollmentRecord("STU-001", "CS-401", enrollment.EnrolledAt);
-Console.WriteLine($"Same data? {enrollment == duplicate}"); 
- */
-/* 
+Console.WriteLine($"Same data? {enrollment == duplicate}"); // True
+
+//Exercise 3 — Part 2: Course Capacity with the field Keyword
+
+
 var course = new Course{ Code = "CS-401", Title = "Advanced C#", Capacity = 30 };
 Console.WriteLine($"Course: {course.Title} (Capacity: {course.Capacity})");
 // Invalid capacity — should throw
 try
 {
+
 course.Capacity =-5;
 }
 catch (ArgumentOutOfRangeException ex)
@@ -62,9 +92,21 @@ catch (ArgumentException ex)
 {
 Console.WriteLine($"Caught: {ex.Message}");
 }
- *//* 
+
 var s = new Student { Id = "S1", Name ="Abeba", Age = 20, GPA= 3.8m };
-Console.WriteLine($"Student: {s.Name}, GPA: {s.GPA}, Age:{s.Age}");
+Console.WriteLine($"Student: {s.Name}, GPA: {s.GPA}");
+
+
+
+// new Student { Id = "S2", Name = "", Age = 20, GPA= 3.0m }; name cannot be empty
+
+// new Student { Id = "S3", Name = "Test", Age = 12, GPA = 3.0m };age must be >=16
+
+// new Student { Id = "S4", Name = "Test", Age = 20, GPA = 5.0m };GPA must be between 0.0 and 4.0
+
+
+
+//Exercise 3B: Interface Contract Wiring (LO 1.4: OOP Contracts)
 
 void PrintGradeReport(IEnumerable<IGradable> assessments)
 {
@@ -75,65 +117,48 @@ Console.WriteLine($"{item.Title}: {item.CalculateGrade():F2}%");
 }
 }
 // Test it — one array holds two completely different types
-IGradable[] cohortAssessments = [new Quiz { Title = "C# Basics", CorrectAnswers = 18, TotalQuestions = 20 },new LabAssignment { Title = "Registration API", FunctionalityScore = 90m, CodeQualityScore =85m}
+IGradable[] cohortAssessments = [
+new Quiz { Title = "C# Basics", CorrectAnswers = 18, TotalQuestions = 20 },
+new LabAssignment { Title = "Registration API", FunctionalityScore = 90m, CodeQualityScore =
+85m}
 ];
-PrintGradeReport(cohortAssessments);
-
+PrintGradeReport(cohortAssessments);                        
  */
-/*  var service = new EnrollmentService();
+//Module 1 Lab Session 2: Query and Classification
 
+//Exercise 4: Defeating the “Pyramid of Doom” (LO 1.6: Pattern Matching & Guards)
+/* 
+var service = new EnrollmentService();
 // Test 1: Valid registration
-var validStudent = new Student
-{
-    Id = "S1",
-    Name = "Abeba",
-    Age = 20,
-    GPA = 3.8m
-};
-
-var validCourse = new Course
-{
-    Code = "CS-401",
-    Title = "Advanced C#",
-    Capacity = 30
-};
-
+var validStudent = new Student { Id = "S1", Name = "Abeba", Age = 20, GPA = 3.8m };
+var validCourse = new Course { Code = "CS-401", Title = "Advanced C#", Capacity = 30 };
 var result = service.ProcessRegistration(validStudent, validCourse);
-
 Console.WriteLine($"Enrolled: {result.StudentId} in {result.CourseCode}");
-
-
 // Test 2: Null student should throw
 try
 {
-    service.ProcessRegistration(null, validCourse);
+
+service.ProcessRegistration(null, validCourse);
 }
 catch (ArgumentNullException ex)
 {
-    Console.WriteLine($"Guard caught: {ex.ParamName}");
+Console.WriteLine($"Guard caught: {ex.ParamName}");
 }
-
-
 // Test 3: Full course should throw
-var fullCourse = new Course
-{
-    Code = "CS-402",
-    Title = "Full Course",
-    Capacity = 1
-};
-
+var fullCourse = new Course { Code = "CS-402", Title = "Full Course", Capacity = 1 };
 fullCourse.EnrolledCount = 1;
-
 try
 {
-    service.ProcessRegistration(validStudent, fullCourse);
+
+service.ProcessRegistration(validStudent, fullCourse);
 }
 catch (InvalidOperationException ex)
 {
-    Console.WriteLine($"Business rule: {ex.Message}");
+Console.WriteLine($"Business rule: {ex.Message}");
 } */
-/* 
-List<Student> students = [
+//Exercise 5: The Analytics Dashboard (LO 1.5: Collections & LINQ)
+
+/* List<Student> students = [
 new Student { Id = "S1", Name= "Abeba", Age = 22, GPA= 3.8m },
 new Student { Id = "S2", Name= "Kidane", Age = 21, GPA = 2.4m},
 new Student { Id = "S3", Name= "Dawit", Age = 20, GPA= 3.1m },
@@ -143,19 +168,21 @@ new Student { Id = "S6", Name= "Yonas", Age = 24, GPA= 3.5m },
 new Student { Id = "S7", Name= "Meron", Age = 22, GPA =1.8m},
 new Student { Id = "S8", Name= "Tesfaye", Age = 21, GPA = 2.9m}
 ];
-var leaderboard = students.Where(s=>s.GPA>=3.5m)
 
+var leaderboard = students
+.Where(s=>s.GPA>=3.5m)
 .OrderByDescending(s=>s.GPA)
-
-.Select(s=>s.Name).ToList();
-
+.Select(s=>s.Name)
+.ToList()
+;
 Console.WriteLine($"Found {leaderboard.Count} Honors Students:");
+
 foreach (var name in leaderboard)
 {
-Console.WriteLine($"- {name}");
+    Console.WriteLine($"- {name}");
 }
-
-decimal averageGpa = students.Average(s => s.GPA);
+ 
+decimal averageGpa =students.Average(s=>s.GPA);
 Console.WriteLine($"\nClass Average GPA: {averageGpa:F2}");
 
 var standingGroups =students.GroupBy(s=>s.GPA switch
@@ -165,32 +192,39 @@ var standingGroups =students.GroupBy(s=>s.GPA switch
     >=2.0m => "Probation",
     <2.0m=> "Academic Warning"
 
-});     
-Console.WriteLine("\n--- Academic Standing Report ---");
-
+}); 
+Console.WriteLine("\n--- Academic Standing Report---");
 foreach (var group in standingGroups)
 {
-    Console.WriteLine($"\n{group.Key} ({group.Count()}):");
-
-    foreach (var s in group)
-    {
-        //Console.WriteLine($" {s.Name} GPA: {s.GPA}");
-    }
+Console.WriteLine($"\n{group.Key} ({group.Count()}):");
+foreach (var s in group)
+{
+Console.WriteLine($" {s.Name} GPA: {s.GPA}");
+}
 }
 string[] backendCourses = ["C#", "ASP.NET Core"];
 string[] frontendCourses = ["TypeScript", "Angular"];
-string[] allCourses = [..backendCourses, ..frontendCourses];
+string[] allCourses =[..backendCourses, ..frontendCourses];
 Console.WriteLine($"\nFull curriculum: {string.Join(", ", allCourses)}");
- */
-// Simulate 5 database calls, each taking 300ms
-// THE WRONGWAY:Blocking withThread.Sleep
 
+ */
+//Module 1 Guided Lab Session 3: Async and Resilience
+
+//Exercise 6: Connection Dropping Under Load (LO 1.7: Async/Await)
+
+ // Simulate 5 database calls, each taking 300ms
+
+// THE WRONGWAY:Blocking withThread.Sleep
+/* 
 var sw =Stopwatch.StartNew();
+
 for (int i = 0; i < 5; i++)
 {
 Thread.Sleep(300); // Thread is HELD for 300ms cannot serve anyone else
 }
+
 Console.WriteLine($"Blocking sequential: {sw.ElapsedMilliseconds}ms");
+
 // ASYNC BUTSTILL SEQUENTIAL: Thread released, but calls are one-at-a-time
 sw.Restart();
 for (int i = 0; i < 5; i++)
@@ -200,10 +234,12 @@ await Task.Delay(300); // Thread released while waiting but still sequential
 Console.WriteLine($"Async sequential: {sw.ElapsedMilliseconds}ms");
 // THE RIGHT WAY:Asyncparallel all 5 start simultaneously
 sw.Restart();
+
 var tasks = Enumerable.Range(0, 5).Select(_ => Task.Delay(300));
 await Task.WhenAll(tasks);
 Console.WriteLine($"Async parallel: {sw.ElapsedMilliseconds}ms");
-
+ */
+var sw =Stopwatch.StartNew();
 async Task<Student> FetchStudentAsync(string id)
 {
 Console.WriteLine($" Fetching {id}...");
@@ -220,29 +256,30 @@ GPA=id switch
 "S3" => 3.5m,
 "S4" => 1.9m,
 "S5" => 3.2m,
-_ =>2.5m
+ _ =>2.5m
 }
 };
 }
+
 
 async Task<Course> FetchCourseAsync(string code)
 {
 Console.WriteLine($" Fetching course {code}...");
 await Task.Delay(200); // Simulate database latency
 return new Course
-{
-Code = code,
+{Code = code,
 Title = $"Course-{code}",
 Capacity = code switch
 {
- "CRS-101" => 2,
+    
+"CRS-101" => 2,
 "CRS-201" => 30,
 "CRS-301" => 15,
-_ =>25
-}
+_ => 25
+}  
 };
-
 }
+
 sw.Restart();
 // Start all fetches simultaneously students AND courses
 string[] studentIds = ["S1", "S2", "S3", "S4", "S5"];
@@ -256,8 +293,9 @@ Console.WriteLine($"\nLoaded {students.Length} students and {courses.Length} cou
 foreach (var s in students)
 {
 Console.WriteLine($" {s.Name} GPA: {s.GPA}");
-}
+} 
 
+// Exercise 6 Part B: The TMS Enrollment Engine (LO 1.8: Resilience & Error Handling)
 
 var enrollCourse = new Course { Code = "CRS-101", Title = "C# Mastery", Capacity = 2 };
 var enrollService = new EnrollmentService();
@@ -280,10 +318,9 @@ failures.Add($"{student.Name}: {ex.Message}");
 Console.WriteLine($" Rejected: {student.Name} {ex.Message}");
 }
 }
+sw.Stop();
+//Exercise 6B: Safe Fire-and-Forget (Optional Not Assessed)
 
-
-
-//
 async Task SendConfirmationAsync(Student student)
 {
 try
@@ -294,30 +331,31 @@ Console.WriteLine($" Email sent to {student.Name}");
 }
 catch (Exception ex)
 {
-// Log the failure do NOT re-throw.
-// This is intentional fire-and-forget.
+
 Console.WriteLine($" Email failed for {student.Name}: {ex.Message}");
 }
+}
+
+
+//Exercise 7: The Unhelpful Crash (LO 1.8: Exceptions & Custom Faults)
 
 try
 {
 
-var overflowCourse = new Course { Code = "CRS-999", Title = "Overflow Test", Capacity = 0 };
-
-enrollService.ProcessRegistration(
-new Student { Id = "S99", Name = "Test", Age = 20, GPA = 3.0m },
-overflowCourse);
-
+var overflowCourse = new Course
+{
+    Code = "CRS-999",
+    Title = "Overflow Test",
+    Capacity = 1
+};
 }
-
 catch (CapacityReachedException ex)
 {
 Console.WriteLine($"\nDomain exception caught:");
 Console.WriteLine($" Course: {ex.CourseCode}");
 Console.WriteLine($" Message: {ex.Message}");
 }
-}
-sw.Stop();
+//Exercise 7B: The Enrollment Report (LO 1.5 + 1.7 Integration)
 
 decimal classAverage = students.Length > 0
 ? students.Average(s => s.GPA)
@@ -327,14 +365,38 @@ Console.WriteLine("\n========== ENROLLMENT SUMMARY ==========");
 Console.WriteLine($"Total students loaded:{students.Length}");
 Console.WriteLine($"Successful enrollments: {enrollments.Count}");
 Console.WriteLine($"Failed enrollments:{failures.Count}");
-Console.WriteLine($"Class average GPA:{classAverage:f2}");
-Console.WriteLine($"Total elapsed time:{sw.ElapsedMilliseconds}ms");
+Console.WriteLine($"Class average GPA: {classAverage:F2}");
+Console.WriteLine($"Total elapsed time: {sw.ElapsedMilliseconds}ms");
 if (failures.Count > 0)
 {
 Console.WriteLine("\n--- Failure Details---");
-foreach (var failure in failures)  AAa
+}
+Console.WriteLine($"Total elapsed time: {sw.ElapsedMilliseconds}ms");
+Console.WriteLine("\n--- Failure Details---");
+foreach (var failure in failures)
 {
 Console.WriteLine($" {failure}");
 }
-}
+
 Console.WriteLine("========================================");
+///
+/// Optional Extension: The Modular Audit Path (Delegates &Lambdas)
+/// 
+ enrollService = new EnrollmentService();
+
+// TODO4: Lambda function
+enrollService.EnrollmentListener = student =>
+{
+    Console.WriteLine($"SMS SENT: Welcome to the TMS, {student.Name}!");
+};
+
+// TODO5: Call FinalizeEnrollment
+var student1 = new Student
+{
+    Id = "S1",
+    Name = "Abeba",
+    Age = 22,
+    GPA = 3.8m
+};
+
+enrollService.FinalizeEnrollment(student1);

@@ -1,5 +1,4 @@
 public record EnrollmentRecord(string StudentId, string CourseCode, DateTime EnrolledAt);
-
 public class Course
 {
 public required string Code { get; init; }
@@ -15,9 +14,10 @@ public int Capacity
 {
 get;
 set => field = value > 0
-? value
-: throw new ArgumentOutOfRangeException(nameof(value), "System constraint: Capacity must begreater than zero.");
-}
+    ? value
+    : throw new ArgumentOutOfRangeException(
+        nameof(value),
+        "System constraint: Capacity must be greater than zero.");}
 public int EnrolledCount { get; set; }
 }
 
@@ -47,7 +47,8 @@ set => field = value is >= 0.0m and <= 4.0m
 }
 }
 
-public interface IGradable{
+public interface IGradable
+{
 string Title { get; }
 decimal CalculateGrade();
 }
@@ -74,71 +75,8 @@ public decimal CalculateGrade()
 return (FunctionalityScore * 0.7m) + (CodeQualityScore * 0.3m);
 }
 }
-/* 
-var leaderboard = students
-    // TODO1: Extract students where GPA is >= 3.5m
-    .Where(s => s.GPA >= 3.5m)
 
-    // TODO2: Sort the remaining students by GPA descending
-    .OrderByDescending(s => s.GPA)
-
-    // TODO3: Project the result so we only keep the 'Name' string
-    .Select(s => s.Name)
-
-    // TODO4: Materialize the lazy query into a concrete List
-    .ToList();
-
-Console.WriteLine($"Found {leaderboard.Count} Honors Students:");
-
-foreach (var name in leaderboard)
-{
-    Console.WriteLine($"- {name}");
-}
-// TODO5: Use LINQ to calculate the average GPA across all students.
-// Format it to 2 decimal places using :F2.
-
-decimal averageGpa = students.Average(s => s.GPA);
-
-Console.WriteLine($"\nClass Average GPA: {averageGpa:F2}");
+//Module 1 Lab Session 2: Query and Classification
 
 
-// Step 4 Group by Academic Standing
-
-// TODO6: Use .GroupBy with a switch expression to classify each student.
-
-var standingGroups = students.GroupBy(s => s.GPA switch
-{
-    >= 3.5m => "Honors",
-    >= 2.5m => "Good Standing",
-    >= 2.0m => "Probation",
-    _ => "Academic Warning"
-});
-
-Console.WriteLine("\n--- Academic Standing Report ---");
-
-foreach (var group in standingGroups)
-{
-    Console.WriteLine($"\n{group.Key} ({group.Count()}):");
-
-    foreach (var s in group)
-    {
-        Console.WriteLine($" {s.Name} GPA: {s.GPA}");
-    }
-}
-
-
-// Step 5 Collection Expressions with Spread
-
-// TODO7: Use the spread operator (..) to merge two arrays and append a value.
-
-string[] backendCourses = ["C#", "ASP.NET Core"];
-string[] frontendCourses = ["TypeScript", "Angular"];
-
-string[] allCourses =
-[
-    ..backendCourses,
-    ..frontendCourses,
-    "SQL"
-];
-
-Console.WriteLine($"\nFull curriculum: {string.Join(", ", allCourses)}");*/
+//Exercise 4: Defeating the “Pyramid of Doom” (LO 1.6: Pattern Matching & Guards)
